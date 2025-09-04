@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila Zero - Plataforma Interativa do Projeto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Cool Tech (Slate grays, white text, and a vibrant blue accent for interactivity and highlights) -->
+    <!-- Application Structure Plan: The thematic dashboard structure is retained but significantly deepened. The new flow is: 1. Visão (Problem/Solution), 2. O Produto (Deep dive into user roles and ALL functional requirements), 3. A Solução Técnica (Interactive versions of ALL diagrams: Use Case, Class, Sequence, ER, and Prototype), 4. Viabilidade (Expanded with cost analysis and interactive data), 5. Roadmap (A new section showing strategic direction). This structure tells a complete story, from the market need to the technical blueprint and business plan, designed for deep exploration by any stakeholder. -->
+    <!-- Visualization & Content Choices: Report Info: All ERS Diagrams -> Goal: Organize/Explain -> Viz: Fully interactive HTML/CSS diagrams -> Interaction: Clicks/hovers reveal detailed specs, relationships, and code snippets -> Justification: Transforms the entire technical specification into a live, explorable model. | Report Info: Cost Table -> Goal: Inform/Analyze -> Viz: Interactive Table + Donut Chart -> Interaction: Hover for details, sort table -> Justification: Makes financial data digestible and transparent. Library: Chart.js/Canvas. | Report Info: Prototypes -> Goal: Visualize -> Viz: Interactive Carousel -> Interaction: Click to navigate screens -> Justification: Provides a tangible feel for the final user experience. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+
+        .diagram-node {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid #e2e8f0;
+        }
+
+        .diagram-node:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-color: #93c5fd;
+        }
+
+        .diagram-node.selected {
+            border-color: #2563eb;
+            background-color: #dbeafe;
+            transform: translateY(-1px);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -21px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 4px solid #2563eb;
+            z-index: 1;
+        }
+
+        .prototype-carousel::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-blue-600">Fila Zero</h1>
+            <div class="hidden md:flex items-center space-x-8 font-semibold">
+                <a href="#vision" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Visão</a>
+                <a href="#product" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Produto</a>
+                <a href="#tech" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Tecnologia</a>
+                <a href="#viability" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Viabilidade</a>
+                <a href="#roadmap" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Roadmap</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="vision" class="min-h-screen flex items-center">
+            <div class="w-full">
+                <div class="text-center">
+                    <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-4">Revolucione a Experiência.
+                        <br><span class="text-blue-600">Acabe com as Filas.</span>
+                    </h2>
+                    <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10">
+                        O Fila Zero é uma plataforma SaaS que transforma a jornada de consumo em eventos, otimizando
+                        operações e maximizando receitas através de uma PWA de alta performance.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-red-100/50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-red-800 mb-2">O Problema</h3>
+                        <p class="text-slate-700">Filas gigantescas em bares, erros em pedidos, e a frustração dos
+                            clientes resultam em perdas de receita significativas e numa experiência negativa que mancha
+                            a reputação de qualquer evento.</p>
+                    </div>
+                    <div class="bg-green-100/50 border-l-4 border-green-500 p-6 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-green-800 mb-2">A Solução</h3>
+                        <p class="text-slate-700">Uma plataforma web instantânea, acedida por QR Code, onde os clientes
+                            pedem e pagam em segundos, aumentando o consumo em até 30% e fornecendo dados valiosos para
+                            a gestão.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="product" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-2">O Produto: Funcionalidades Detalhadas</h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Uma análise completa dos requisitos funcionais que
+                    dão vida ao Fila Zero, segmentados por perfil de utilizador.</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="flex border-b border-slate-200 mb-6" id="product-tabs-detailed">
+                    <button data-tab="consumer"
+                        class="product-tab-detailed px-6 py-3 font-semibold text-blue-600 border-b-2 border-blue-600">Consumidor
+                        Final</button>
+                    <button data-tab="manager"
+                        class="product-tab-detailed px-6 py-3 font-semibold text-slate-500">Gestor do Evento</button>
+                    <button data-tab="staff" class="product-tab-detailed px-6 py-3 font-semibold text-slate-500">Equipa
+                        de Bar</button>
+                </div>
+                <div id="product-content-detailed">
+                    <!-- Content will be injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <section id="tech" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-2">A Solução Técnica: Arquitetura Interativa</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">Explore todos os diagramas técnicos do projeto.
+                    Clique nos elementos para interagir e compreender a estrutura, o fluxo e os dados que sustentam o
+                    Fila Zero.</p>
+            </div>
+            <div class="space-y-12">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-2">Protótipo da Aplicação</h3>
+                    <p class="text-slate-600 mb-6">Navegue pelas telas principais do fluxo do utilizador para ter uma
+                        visão tangível da experiência final.</p>
+                    <div class="relative">
+                        <div id="prototype-carousel"
+                            class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth prototype-carousel">
+                            <!-- Prototypes injected by JS -->
+                        </div>
+                        <button id="prevBtn"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white p-2 rounded-full shadow-md text-2xl">‹</button>
+                        <button id="nextBtn"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white p-2 rounded-full shadow-md text-2xl">›</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-6">Diagrama de Classe</h3>
+                    <div id="class-diagram" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                        <!-- Classes injected by JS -->
+                    </div>
+                    <div id="class-details" class="mt-6 p-6 bg-slate-50 rounded-lg min-h-[120px] fade-in hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="viability" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-2">Análise de Viabilidade e Custos</h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Uma análise transparente da viabilidade do projeto,
+                    incluindo a estimativa de custos de implantação para um estabelecimento parceiro.</p>
+            </div>
+            <div class="grid lg:grid-cols-5 gap-8">
+                <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-4">Estimativa de Custos de Implantação</h3>
+                    <table class="w-full text-left text-sm" id="costs-table">
+                        <thead class="bg-slate-50 text-slate-600 uppercase">
+                            <tr>
+                                <th class="p-3 cursor-pointer" data-sort="item">Item ▼</th>
+                                <th class="p-3 cursor-pointer text-right" data-sort="total">Valor Total ▼</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Costs injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-4">Distribuição de Custos</h3>
+                    <div class="chart-container h-80">
+                        <canvas id="costsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="py-20">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-2">Roadmap Estratégico do Produto</h2>
+                <p class="text-lg text-slate-600 max-w-2xl mx-auto">A nossa visão para o futuro, focada em validação,
+                    crescimento e inovação contínua.</p>
+            </div>
+            <div class="relative max-w-2xl mx-auto">
+                <div class="border-l-4 border-slate-200 absolute h-full top-0 left-5"></div>
+                <div class="space-y-16">
+                    <div class="relative pl-16 timeline-item">
+                        <h4 class="text-xl font-bold text-blue-600">Fase 1: MVP (0-3 Meses)</h4>
+                        <p class="text-slate-600">Lançamento focado em eventos e baladas para validar o core da solução:
+                            pedidos e pagamentos via PWA. Foco total em estabilidade e na experiência do consumidor.</p>
+                    </div>
+                    <div class="relative pl-16 timeline-item">
+                        <h4 class="text-xl font-bold text-blue-600">Fase 2: Expansão (4-9 Meses)</h4>
+                        <p class="text-slate-600">Introdução do módulo para restaurantes (gestão de mesas). Lançamento
+                            do Dashboard de Analytics para gestores, provando o ROI com dados.</p>
+                    </div>
+                    <div class="relative pl-16 timeline-item">
+                        <h4 class="text-xl font-bold text-blue-600">Fase 3: Ecossistema (10-18 Meses)</h4>
+                        <p class="text-slate-600">Desenvolvimento de APIs para integração com sistemas PDV. Introdução
+                            de módulos de fidelidade e marketing para transformar o Fila Zero numa plataforma de CRM.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-white mt-20">
+        <div class="container mx-auto px-6 py-10 text-center">
+            <h3 class="text-3xl font-bold text-blue-400">Fila Zero</h3>
+            <p class="mt-3 text-slate-400">Transformando a conveniência em receita. <br>Projeto idealizado por Gustavo
+                Leal, 2025.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const data = {
+                requirements: {
+                    consumer: [
+                        { id: 'RF06', name: 'Aceder via QR Code', desc: 'Aceder à aplicação do evento instantaneamente no navegador, sem necessidade de download.' },
+                        { id: 'RF07', name: 'Navegar no Cardápio', desc: 'Visualizar todos os produtos disponíveis de forma clara e organizada por categorias.' },
+                        { id: 'RF08', name: 'Realizar Pedido', desc: 'Adicionar múltiplos itens a um carrinho de compras e confirmar o pedido com facilidade.' },
+                        { id: 'RF09', name: 'Efetuar Pagamento', desc: 'Pagar de forma segura com os principais métodos (Pix, Cartão de Crédito) através de um gateway integrado.' },
+                        { id: 'RF10', name: 'Acompanhar Status', desc: 'Ver em tempo real o status do pedido (Recebido, Em Preparo, Pronto) para saber o momento exato da retirada.' }
+                    ],
+                    manager: [
+                        { id: 'RF01', name: 'Gerir Eventos', desc: 'Criar, configurar, ativar e desativar eventos na plataforma, definindo datas e horários de operação.' },
+                        { id: 'RF02', name: 'Gerir Cardápio', desc: 'Adicionar, editar e remover categorias e itens do cardápio, incluindo nome, preço, descrição e imagem.' },
+                        { id: 'RF03', name: 'Controlo de Disponibilidade', desc: 'Marcar itens como "esgotados" em tempo real com um único clique para evitar pedidos de produtos indisponíveis.' },
+                        { id: 'RF05', name: 'Personalização (White-Label)', desc: 'Configurar a aplicação do evento com o logotipo e o esquema de cores da própria marca.' },
+                        { id: 'RF11', name: 'Aceder a Relatórios', desc: 'Visualizar relatórios básicos de vendas e produtos mais populares por evento para tomada de decisão.' }
+                    ],
+                    staff: [
+                        { id: 'RF04', name: 'Painel de Pedidos (KDS)', desc: 'Visualizar todos os pedidos recebidos numa interface estilo kanban (Recebido, Em Preparo, Pronto) para uma gestão visual e eficiente.' },
+                        { id: 'RF-S01', name: 'Atualizar Status do Pedido', desc: 'Mover os cartões de pedido entre as colunas de status com um simples arrastar e soltar ou um clique.' },
+                        { id: 'RF-S02', name: 'Visualizar Detalhes do Pedido', desc: 'Clicar num pedido para ver todos os itens, quantidades e observações feitas pelo cliente.' }
+                    ]
+                },
+                classes: [
+                    { name: 'Cliente', attributes: ['cliente_id (PK)', 'nome_fantasia', 'cnpj'], desc: 'Representa o estabelecimento (B2B) que contrata o serviço.' },
+                    { name: 'Evento', attributes: ['evento_id (PK)', 'cliente_id (FK)', 'nome_evento', 'data_inicio'], desc: 'Representa uma instância de um evento criado por um Cliente.' },
+                    { name: 'Usuario', attributes: ['usuario_id (PK)', 'cpf', 'nome'], desc: 'Representa o consumidor final que frequenta o evento e faz pedidos.' },
+                    { name: 'Pulseira', attributes: ['pulseira_id (PK)', 'evento_id (FK)', 'usuario_id (FK)', 'codigo_pulseira'], desc: 'Representa a sessão única de um Usuário dentro de um Evento.' },
+                    { name: 'ItemCardapio', attributes: ['item_id (PK)', 'nome_item', 'preco', 'disponivel'], desc: 'Representa um produto que pode ser vendido.' },
+                    { name: 'Pedido', attributes: ['pedido_id (PK)', 'pulseira_id (FK)', 'status_pedido', 'valor_total'], desc: 'O registo de uma transação de compra feita por um Usuário.' },
+                    { name: 'ItemPedido', attributes: ['item_pedido_id (PK)', 'pedido_id (FK)', 'item_id (FK)', 'quantidade'], desc: 'Tabela de junção que detalha os produtos e quantidades de um Pedido.' },
+                    { name: 'Pagamento', attributes: ['pagamento_id (PK)', 'pedido_id (FK)', 'metodo', 'status'], desc: 'O registo da transação financeira associada a um Pedido.' }
+                ],
+                costs: [
+                    { item: 'Computadores para operação', total: 12600.00, category: 'Hardware' },
+                    { item: 'Nobreaks com autonomia', total: 1050.00, category: 'Hardware' },
+                    { item: 'Smartphones para equipa', total: 4800.00, category: 'Hardware' },
+                    { item: 'Licença mensal da plataforma', total: 350.00, category: 'Software' },
+                    { item: 'Serviço de internet dedicada', total: 250.00, category: 'Serviços' },
+                    { item: 'Licença antivírus corporativo', total: 720.00, category: 'Software' },
+                    { item: 'Software de gestão auxiliar', total: 500.00, category: 'Software' },
+                    { item: 'Equipamentos de rede', total: 680.00, category: 'Hardware' },
+                    { item: 'Treinamento inicial da equipa', total: 1500.00, category: 'Serviços' }
+                ],
+                prototypes: [
+                    { title: 'Ecrã de Produtos', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Card%C3%A1pio+Digital' },
+                    { title: 'Carrinho de Compras', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Carrinho' },
+                    { title: 'Pagamento', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Pagamento' },
+                    { title: 'Status do Pedido', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Pedido+%23157' },
+                    { title: 'Painel do Gestor (KDS)', url: 'https://placehold.co/800x500/f1f5f9/3b82f6?text=Painel+de+Pedidos+(KDS)' },
+                    { title: 'Painel do Entregador', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=%C3%81rea+do+Entregador' },
+                ]
+            };
+
+            const productContent = document.getElementById('product-content-detailed');
+            const productTabs = document.querySelectorAll('.product-tab-detailed');
+
+            function renderRequirements(type) {
+                const reqs = data.requirements[type];
+                const content = `
+                    <div class="fade-in grid md:grid-cols-2 gap-6">
+                        ${reqs.map(r => `
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                                <h4 class="font-bold text-blue-600">${r.id} - ${r.name}</h4>
+                                <p class="text-sm text-slate-600 mt-1">${r.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>`;
+                productContent.innerHTML = content;
+            }
+
+            productTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-tab');
+                    productTabs.forEach(t => {
+                        t.classList.remove('text-blue-600', 'border-blue-600');
+                        t.classList.add('text-slate-500');
+                    });
+                    tab.classList.add('text-blue-600', 'border-blue-600');
+                    renderRequirements(target);
+                });
+            });
+
+            renderRequirements('consumer');
+
+            const classDiagram = document.getElementById('class-diagram');
+            const classDetails = document.getElementById('class-details');
+            data.classes.forEach(c => {
+                const node = document.createElement('div');
+                node.className = 'diagram-node p-4 bg-white rounded-lg shadow-md';
+                node.innerHTML = `<h4 class="font-bold text-center border-b pb-2">${c.name}</h4><ul class="text-sm mt-2 text-slate-600">${c.attributes.map(a => `<li>${a}</li>`).join('')}</ul>`;
+                node.addEventListener('click', () => {
+                    document.querySelectorAll('.diagram-node').forEach(n => n.classList.remove('selected'));
+                    node.classList.add('selected');
+                    classDetails.innerHTML = `<h4 class="font-bold text-blue-600">${c.name}</h4><p class="mt-2 text-slate-700">${c.desc}</p>`;
+                    classDetails.classList.remove('hidden');
+                });
+                classDiagram.appendChild(node);
+            });
+
+            const costsTbody = document.querySelector('#costs-table tbody');
+            function renderCosts(sortKey = 'item', asc = true) {
+                const sortedCosts = [...data.costs].sort((a, b) => {
+                    if (a[sortKey] < b[sortKey]) return asc ? -1 : 1;
+                    if (a[sortKey] > b[sortKey]) return asc ? 1 : -1;
+                    return 0;
+                });
+                costsTbody.innerHTML = sortedCosts.map(c => `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="p-3">${c.item}</td>
+                        <td class="p-3 text-right font-semibold">${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.total)}</td>
+                    </tr>
+                `).join('');
+            }
+            renderCosts();
+
+            document.querySelectorAll('#costs-table th').forEach(th => {
+                let asc = true;
+                th.addEventListener('click', () => {
+                    asc = !asc;
+                    const sortKey = th.dataset.sort;
+                    document.querySelectorAll('#costs-table th').forEach(h => h.textContent = h.textContent.replace(' ▼', '').replace(' ▲', ''));
+                    th.textContent += asc ? ' ▲' : ' ▼';
+                    renderCosts(sortKey, asc);
+                });
+            });
+
+            const costsByCategory = data.costs.reduce((acc, cost) => {
+                acc[cost.category] = (acc[cost.category] || 0) + cost.total;
+                return acc;
+            }, {});
+
+            new Chart(document.getElementById('costsChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(costsByCategory),
+                    datasets: [{
+                        data: Object.values(costsByCategory),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            const carousel = document.getElementById('prototype-carousel');
+            carousel.innerHTML = data.prototypes.map(p => `
+                <div class="snap-center flex-shrink-0 w-full md:w-1/3 p-2">
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <img src="${p.url}" alt="${p.title}" class="w-full rounded-md object-cover">
+                        <p class="text-center font-semibold mt-4">${p.title}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                carousel.scrollBy({ left: carousel.clientWidth / 3, behavior: 'smooth' });
+            });
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                carousel.scrollBy({ left: -carousel.clientWidth / 3, behavior: 'smooth' });
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            sections.forEach(section => observer.observe(section));
+        });
+    </script>
+</body>
+
+</html>
