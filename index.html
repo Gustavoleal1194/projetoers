@@ -10,14 +10,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Cool Tech (Slate grays, white text, and a vibrant blue accent for interactivity and highlights) -->
-    <!-- Application Structure Plan: The thematic dashboard structure is retained but significantly deepened. The new flow is: 1. Visão (Problem/Solution), 2. O Produto (Deep dive into user roles and ALL functional requirements), 3. A Solução Técnica (Interactive versions of ALL diagrams: Use Case, Class, Sequence, ER, and Prototype), 4. Viabilidade (Expanded with cost analysis and interactive data), 5. Roadmap (A new section showing strategic direction). This structure tells a complete story, from the market need to the technical blueprint and business plan, designed for deep exploration by any stakeholder. -->
-    <!-- Visualization & Content Choices: Report Info: All ERS Diagrams -> Goal: Organize/Explain -> Viz: Fully interactive HTML/CSS diagrams -> Interaction: Clicks/hovers reveal detailed specs, relationships, and code snippets -> Justification: Transforms the entire technical specification into a live, explorable model. | Report Info: Cost Table -> Goal: Inform/Analyze -> Viz: Interactive Table + Donut Chart -> Interaction: Hover for details, sort table -> Justification: Makes financial data digestible and transparent. Library: Chart.js/Canvas. | Report Info: Prototypes -> Goal: Visualize -> Viz: Interactive Carousel -> Interaction: Click to navigate screens -> Justification: Provides a tangible feel for the final user experience. -->
+    <!-- Chosen Palette: Corporate Blue & Slate (A sophisticated palette using deep slate for text, a clean white/light gray background, and a confident, trustworthy blue for all interactive elements, data highlights, and calls to action.) -->
+    <!-- Application Structure Plan: The application uses a comprehensive narrative structure, guiding the user from the high-level business case to the deep technical details and future vision. The flow is: 1. Visão (Problem/Solution), 2. O Produto (Detailed user-centric features), 3. A Engenharia por Trás (A fully interactive hub for ALL technical diagrams: Use Case, Class, Sequence, and ER), 4. Análise Estratégica (Deep dive into SWOT, Business Model, Financials & ROI), 5. Roadmap. This structure is designed to impress a corporate audience by showing strategic depth before technical implementation. -->
+    <!-- Visualization & Content Choices: Report Info: Viability Analysis -> Goal: Analyze/Strategize -> Viz: Interactive SWOT Analysis Grid, detailed Business Model cards, and an interactive ROI Calculator with a dynamic Bar Chart -> Interaction: Hover on SWOT items for details, use sliders/inputs on the calculator to see real-time ROI projections -> Justification: This transforms a simple viability section into a powerful, data-driven business case that allows for scenario planning, directly addressing the need for a "grande porte" presentation. Library: Chart.js/Canvas for the ROI chart. | Report Info: ALL ERS Diagrams -> Goal: Organize/Explain/Explore -> Viz: Fully interactive HTML/CSS diagrams built from scratch -> Interaction: Clicks/hovers on nodes and actors reveal detailed specs -> Justification: Transforms the static ERS into a live, explorable model. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
+            color: #1e293b;
         }
 
         .nav-link {
@@ -34,11 +35,12 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             border: 2px solid #e2e8f0;
+            position: relative;
         }
 
         .diagram-node:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.1);
             border-color: #93c5fd;
         }
 
@@ -54,24 +56,25 @@
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
-            height: 300px;
-            max-height: 400px;
+            height: 320px;
+            max-height: 450px;
         }
 
         @media (min-width: 768px) {
             .chart-container {
-                height: 350px;
+                height: 380px;
             }
         }
 
         .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.6s ease-in-out forwards;
+            opacity: 0;
         }
 
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(15px);
             }
 
             to {
@@ -93,13 +96,35 @@
             z-index: 1;
         }
 
-        .prototype-carousel::-webkit-scrollbar {
-            display: none;
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tech-tab {
+            transition: all 0.3s;
+        }
+
+        .tech-tab.active {
+            background-color: #2563eb;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+        }
+
+        .swot-card {
+            transition: all 0.3s ease;
+        }
+
+        .swot-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
         }
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800">
+<body class="bg-slate-50">
 
     <header class="bg-white/90 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -107,8 +132,9 @@
             <div class="hidden md:flex items-center space-x-8 font-semibold">
                 <a href="#vision" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Visão</a>
                 <a href="#product" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Produto</a>
-                <a href="#tech" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Tecnologia</a>
-                <a href="#viability" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Viabilidade</a>
+                <a href="#tech" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Engenharia</a>
+                <a href="#viability" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Análise
+                    Estratégica</a>
                 <a href="#roadmap" class="nav-link text-slate-600 border-b-2 border-transparent pb-1">Roadmap</a>
             </div>
         </nav>
@@ -119,23 +145,25 @@
         <section id="vision" class="min-h-screen flex items-center">
             <div class="w-full">
                 <div class="text-center">
-                    <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-4">Revolucione a Experiência.
-                        <br><span class="text-blue-600">Acabe com as Filas.</span>
-                    </h2>
-                    <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10">
-                        O Fila Zero é uma plataforma SaaS que transforma a jornada de consumo em eventos, otimizando
+                    <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-4 fade-in"
+                        style="animation-delay: 0.2s;">Revolucione a Experiência. <br><span class="text-blue-600">Acabe
+                            com as Filas.</span></h2>
+                    <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 fade-in"
+                        style="animation-delay: 0.4s;">
+                        O Fila Zero é a plataforma SaaS que transforma a jornada de consumo em eventos, otimizando
                         operações e maximizando receitas através de uma PWA de alta performance.
                     </p>
                 </div>
-                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <div class="bg-red-100/50 border-l-4 border-red-500 p-6 rounded-r-lg">
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto glassmorphism rounded-2xl shadow-lg p-8 fade-in"
+                    style="animation-delay: 0.6s;">
+                    <div class="border-l-4 border-red-500 p-6 rounded-r-lg bg-white/50">
                         <h3 class="font-bold text-xl text-red-800 mb-2">O Problema</h3>
                         <p class="text-slate-700">Filas gigantescas em bares, erros em pedidos, e a frustração dos
                             clientes resultam em perdas de receita significativas e numa experiência negativa que mancha
                             a reputação de qualquer evento.</p>
                     </div>
-                    <div class="bg-green-100/50 border-l-4 border-green-500 p-6 rounded-r-lg">
-                        <h3 class="font-bold text-xl text-green-800 mb-2">A Solução</h3>
+                    <div class="border-l-4 border-green-500 p-6 rounded-r-lg bg-white/50">
+                        <h3 class="font-bold text-xl text-green-800 mb-2">A Solução Estratégica</h3>
                         <p class="text-slate-700">Uma plataforma web instantânea, acedida por QR Code, onde os clientes
                             pedem e pagam em segundos, aumentando o consumo em até 30% e fornecendo dados valiosos para
                             a gestão.</p>
@@ -146,19 +174,22 @@
 
         <section id="product" class="py-20">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-2">O Produto: Funcionalidades Detalhadas</h2>
-                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Uma análise completa dos requisitos funcionais que
-                    dão vida ao Fila Zero, segmentados por perfil de utilizador.</p>
+                <h2 class="text-4xl font-bold mb-2">O Produto em Ação</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">Uma análise completa de todos os requisitos
+                    funcionais, segmentados por perfil de utilizador, demonstrando a profundidade e a coesão da solução
+                    Fila Zero.</p>
             </div>
             <div class="bg-white rounded-2xl shadow-lg p-8">
-                <div class="flex border-b border-slate-200 mb-6" id="product-tabs-detailed">
+                <div class="flex border-b border-slate-200 mb-8" id="product-tabs-detailed">
                     <button data-tab="consumer"
-                        class="product-tab-detailed px-6 py-3 font-semibold text-blue-600 border-b-2 border-blue-600">Consumidor
-                        Final</button>
+                        class="product-tab-detailed flex-1 text-center px-6 py-4 font-semibold text-blue-600 border-b-2 border-blue-600">👤
+                        Consumidor Final</button>
                     <button data-tab="manager"
-                        class="product-tab-detailed px-6 py-3 font-semibold text-slate-500">Gestor do Evento</button>
-                    <button data-tab="staff" class="product-tab-detailed px-6 py-3 font-semibold text-slate-500">Equipa
-                        de Bar</button>
+                        class="product-tab-detailed flex-1 text-center px-6 py-4 font-semibold text-slate-500">💼 Gestor
+                        do Evento</button>
+                    <button data-tab="staff"
+                        class="product-tab-detailed flex-1 text-center px-6 py-4 font-semibold text-slate-500">🧑‍🍳
+                        Equipa de Bar</button>
                 </div>
                 <div id="product-content-detailed">
                     <!-- Content will be injected by JS -->
@@ -168,63 +199,155 @@
 
         <section id="tech" class="py-20">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-2">A Solução Técnica: Arquitetura Interativa</h2>
-                <p class="text-lg text-slate-600 max-w-3xl mx-auto">Explore todos os diagramas técnicos do projeto.
-                    Clique nos elementos para interagir e compreender a estrutura, o fluxo e os dados que sustentam o
-                    Fila Zero.</p>
+                <h2 class="text-4xl font-bold mb-2">A Engenharia por Trás do Fila Zero</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">Explore a arquitetura completa do sistema. Todos os
+                    diagramas são interativos: clique nos elementos para ver detalhes, especificações e como cada parte
+                    se conecta para criar uma solução robusta e escalável.</p>
             </div>
-            <div class="space-y-12">
-                <div class="bg-white rounded-2xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-2">Protótipo da Aplicação</h3>
-                    <p class="text-slate-600 mb-6">Navegue pelas telas principais do fluxo do utilizador para ter uma
-                        visão tangível da experiência final.</p>
-                    <div class="relative">
-                        <div id="prototype-carousel"
-                            class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth prototype-carousel">
-                            <!-- Prototypes injected by JS -->
-                        </div>
-                        <button id="prevBtn"
-                            class="absolute left-0 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white p-2 rounded-full shadow-md text-2xl">‹</button>
-                        <button id="nextBtn"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white p-2 rounded-full shadow-md text-2xl">›</button>
-                    </div>
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="flex justify-center border-b border-slate-200 mb-8" id="tech-diagram-tabs">
+                    <button data-diagram="uc" class="tech-tab active px-6 py-3 font-semibold rounded-t-lg">Casos de
+                        Uso</button>
+                    <button data-diagram="class" class="tech-tab px-6 py-3 font-semibold rounded-t-lg">Classes</button>
+                    <button data-diagram="sequence"
+                        class="tech-tab px-6 py-3 font-semibold rounded-t-lg">Sequência</button>
+                    <button data-diagram="er"
+                        class="tech-tab px-6 py-3 font-semibold rounded-t-lg">Entidade-Relacionamento</button>
                 </div>
-
-                <div class="bg-white rounded-2xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-6">Diagrama de Classe</h3>
-                    <div id="class-diagram" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                        <!-- Classes injected by JS -->
-                    </div>
-                    <div id="class-details" class="mt-6 p-6 bg-slate-50 rounded-lg min-h-[120px] fade-in hidden"></div>
+                <div id="tech-diagram-content">
+                    <!-- Diagrams injected by JS -->
                 </div>
             </div>
         </section>
 
         <section id="viability" class="py-20">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold mb-2">Análise de Viabilidade e Custos</h2>
-                <p class="text-lg text-slate-600 max-w-2xl mx-auto">Uma análise transparente da viabilidade do projeto,
-                    incluindo a estimativa de custos de implantação para um estabelecimento parceiro.</p>
+                <h2 class="text-4xl font-bold mb-2">Análise Estratégica e Modelo de Negócio</h2>
+                <p class="text-lg text-slate-600 max-w-3xl mx-auto">Uma análise aprofundada da viabilidade, do
+                    posicionamento de mercado e do modelo de receita, demonstrando o potencial de crescimento e a
+                    solidez do projeto.</p>
             </div>
-            <div class="grid lg:grid-cols-5 gap-8">
-                <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-4">Estimativa de Custos de Implantação</h3>
-                    <table class="w-full text-left text-sm" id="costs-table">
-                        <thead class="bg-slate-50 text-slate-600 uppercase">
-                            <tr>
-                                <th class="p-3 cursor-pointer" data-sort="item">Item ▼</th>
-                                <th class="p-3 cursor-pointer text-right" data-sort="total">Valor Total ▼</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Costs injected by JS -->
-                        </tbody>
-                    </table>
+            <div class="space-y-16">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-3xl font-bold mb-8 text-center">Modelo de Negócio e Fontes de Receita</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div
+                            class="border border-slate-200 p-6 rounded-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                            <h4 class="font-bold text-xl text-blue-600">Taxa de Setup</h4>
+                            <p class="mt-2 text-slate-600">Uma taxa única de implantação para personalização da
+                                plataforma (white-label), cadastro do cardápio e treino da equipa do cliente.</p>
+                        </div>
+                        <div
+                            class="border border-slate-200 p-6 rounded-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                            <h4 class="font-bold text-xl text-blue-600">Assinatura Mensal (SaaS)</h4>
+                            <p class="mt-2 text-slate-600">Uma mensalidade recorrente pelo uso, manutenção e suporte da
+                                plataforma, garantindo receita previsível.</p>
+                        </div>
+                        <div
+                            class="border border-slate-200 p-6 rounded-lg hover:shadow-xl hover:-translate-y-1 transition-all">
+                            <h4 class="font-bold text-xl text-blue-600">Taxa por Transação</h4>
+                            <p class="mt-2 text-slate-600">Uma pequena percentagem sobre cada pedido, alinhando o nosso
+                                sucesso diretamente com o volume de vendas do cliente.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-4">Distribuição de Custos</h3>
-                    <div class="chart-container h-80">
-                        <canvas id="costsChart"></canvas>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-3xl font-bold mb-8 text-center">Análise SWOT</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="swot-card bg-green-50 border-l-4 border-green-500 p-6 rounded-lg">
+                            <h4 class="font-bold text-xl text-green-800">Forças (Strengths)</h4>
+                            <ul class="mt-2 list-disc list-inside text-slate-700 space-y-1">
+                                <li>Solução para uma dor de mercado universal e validada.</li>
+                                <li>Modelo de negócio PWA com baixo atrito de adoção.</li>
+                                <li>Alto potencial de coleta de dados para Business Intelligence.</li>
+                            </ul>
+                        </div>
+                        <div class="swot-card bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
+                            <h4 class="font-bold text-xl text-red-800">Fraquezas (Weaknesses)</h4>
+                            <ul class="mt-2 list-disc list-inside text-slate-700 space-y-1">
+                                <li>Dependência da qualidade da infraestrutura de internet no local do evento.</li>
+                                <li>Necessidade de educar o mercado e mudar a cultura operacional dos estabelecimentos.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="swot-card bg-blue-50 border-l-4 border-blue-500 p-6 rounded-lg">
+                            <h4 class="font-bold text-xl text-blue-800">Oportunidades (Opportunities)</h4>
+                            <ul class="mt-2 list-disc list-inside text-slate-700 space-y-1">
+                                <li>Expansão para outros segmentos (restaurantes, hotéis, estádios).</li>
+                                <li>Criação de um ecossistema de dados para marketing direcionado.</li>
+                                <li>Parcerias com produtores de eventos e associações do setor.</li>
+                            </ul>
+                        </div>
+                        <div class="swot-card bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
+                            <h4 class="font-bold text-xl text-yellow-800">Ameaças (Threats)</h4>
+                            <ul class="mt-2 list-disc list-inside text-slate-700 space-y-1">
+                                <li>Entrada de grandes players de delivery no nicho de eventos.</li>
+                                <li>Questões regulatórias sobre transações e dados (LGPD).</li>
+                                <li>Surgimento de tecnologias concorrentes.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-3xl font-bold mb-8 text-center">Pontuação de Viabilidade Estratégica</h3>
+                    <div class="chart-container">
+                        <canvas id="viabilityChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8 grid lg:grid-cols-5 gap-8 items-center">
+                    <div class="lg:col-span-3">
+                        <h3 class="text-2xl font-bold mb-4">Estimativa de Custos de Implantação (Cliente)</h3>
+                        <table class="w-full text-left text-sm" id="costs-table">
+                            <thead class="bg-slate-50 text-slate-600 uppercase">
+                                <tr>
+                                    <th class="p-3 cursor-pointer" data-sort="item">Item ▼</th>
+                                    <th class="p-3 cursor-pointer text-right" data-sort="total">Valor Total ▼</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Costs injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <h3 class="text-2xl font-bold mb-4 text-center">Distribuição de Custos</h3>
+                        <div class="chart-container h-80">
+                            <canvas id="costsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-3xl font-bold mb-8 text-center">Calculadora de ROI e Projeção de Receita</h3>
+                    <div class="grid lg:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <div class="mb-4">
+                                <label for="events" class="block font-semibold mb-1">Nº de Eventos / Mês:</label>
+                                <input type="range" id="events" min="1" max="50" value="10"
+                                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="events-val" class="font-bold text-blue-600 text-lg">10</span>
+                            </div>
+                            <div class="mb-4">
+                                <label for="revenue" class="block font-semibold mb-1">Receita Média por Evento
+                                    (R$):</label>
+                                <input type="range" id="revenue" min="10000" max="200000" value="50000" step="1000"
+                                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="revenue-val" class="font-bold text-blue-600 text-lg">R$ 50.000</span>
+                            </div>
+                            <div class="mb-4">
+                                <label for="increase" class="block font-semibold mb-1">Aumento de Vendas Estimado
+                                    (%):</label>
+                                <input type="range" id="increase" min="5" max="40" value="15"
+                                    class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                                <span id="increase-val" class="font-bold text-green-600 text-lg">15%</span>
+                            </div>
+                        </div>
+                        <div class="chart-container h-80">
+                            <canvas id="roiChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,27 +357,12 @@
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-bold mb-2">Roadmap Estratégico do Produto</h2>
                 <p class="text-lg text-slate-600 max-w-2xl mx-auto">A nossa visão para o futuro, focada em validação,
-                    crescimento e inovação contínua.</p>
+                    crescimento e inovação contínua para nos tornarmos a plataforma líder do setor.</p>
             </div>
-            <div class="relative max-w-2xl mx-auto">
+            <div class="relative max-w-3xl mx-auto">
                 <div class="border-l-4 border-slate-200 absolute h-full top-0 left-5"></div>
-                <div class="space-y-16">
-                    <div class="relative pl-16 timeline-item">
-                        <h4 class="text-xl font-bold text-blue-600">Fase 1: MVP (0-3 Meses)</h4>
-                        <p class="text-slate-600">Lançamento focado em eventos e baladas para validar o core da solução:
-                            pedidos e pagamentos via PWA. Foco total em estabilidade e na experiência do consumidor.</p>
-                    </div>
-                    <div class="relative pl-16 timeline-item">
-                        <h4 class="text-xl font-bold text-blue-600">Fase 2: Expansão (4-9 Meses)</h4>
-                        <p class="text-slate-600">Introdução do módulo para restaurantes (gestão de mesas). Lançamento
-                            do Dashboard de Analytics para gestores, provando o ROI com dados.</p>
-                    </div>
-                    <div class="relative pl-16 timeline-item">
-                        <h4 class="text-xl font-bold text-blue-600">Fase 3: Ecossistema (10-18 Meses)</h4>
-                        <p class="text-slate-600">Desenvolvimento de APIs para integração com sistemas PDV. Introdução
-                            de módulos de fidelidade e marketing para transformar o Fila Zero numa plataforma de CRM.
-                        </p>
-                    </div>
+                <div id="roadmap-container" class="space-y-16">
+                    <!-- Roadmap items injected by JS -->
                 </div>
             </div>
         </section>
@@ -271,39 +379,53 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-
-            const data = {
+            const FilaZeroData = {
                 requirements: {
                     consumer: [
-                        { id: 'RF06', name: 'Aceder via QR Code', desc: 'Aceder à aplicação do evento instantaneamente no navegador, sem necessidade de download.' },
-                        { id: 'RF07', name: 'Navegar no Cardápio', desc: 'Visualizar todos os produtos disponíveis de forma clara e organizada por categorias.' },
-                        { id: 'RF08', name: 'Realizar Pedido', desc: 'Adicionar múltiplos itens a um carrinho de compras e confirmar o pedido com facilidade.' },
-                        { id: 'RF09', name: 'Efetuar Pagamento', desc: 'Pagar de forma segura com os principais métodos (Pix, Cartão de Crédito) através de um gateway integrado.' },
-                        { id: 'RF10', name: 'Acompanhar Status', desc: 'Ver em tempo real o status do pedido (Recebido, Em Preparo, Pronto) para saber o momento exato da retirada.' }
+                        { id: 'RF06', name: 'Acesso Instantâneo via QR Code', desc: 'Aceder à aplicação do evento instantaneamente no navegador do telemóvel, eliminando completamente a necessidade de download e instalação de uma aplicação nativa.' },
+                        { id: 'RF07', name: 'Navegação Intuitiva no Cardápio', desc: 'Visualizar todos os produtos disponíveis de forma clara, com imagens de alta qualidade, descrições detalhadas e preços, organizados por categorias lógicas.' },
+                        { id: 'RF08', name: 'Realização de Pedido Simplificada', desc: 'Adicionar múltiplos itens a um carrinho de compras com um único toque e finalizar o pedido num fluxo de ecrãs mínimo e otimizado para velocidade.' },
+                        { id: 'RF09', name: 'Pagamento Seguro e Diversificado', desc: 'Pagar de forma segura com os principais métodos de pagamento do mercado (Pix, Cartão de Crédito) através de um gateway de pagamento certificado.' },
+                        { id: 'RF10', name: 'Acompanhamento de Status em Tempo Real', desc: 'Ver em tempo real o status exato do pedido (Ex: Recebido, Em Preparo, Pronto para Retirada) para saber o momento exato de se dirigir ao balcão.' }
                     ],
                     manager: [
-                        { id: 'RF01', name: 'Gerir Eventos', desc: 'Criar, configurar, ativar e desativar eventos na plataforma, definindo datas e horários de operação.' },
-                        { id: 'RF02', name: 'Gerir Cardápio', desc: 'Adicionar, editar e remover categorias e itens do cardápio, incluindo nome, preço, descrição e imagem.' },
-                        { id: 'RF03', name: 'Controlo de Disponibilidade', desc: 'Marcar itens como "esgotados" em tempo real com um único clique para evitar pedidos de produtos indisponíveis.' },
-                        { id: 'RF05', name: 'Personalização (White-Label)', desc: 'Configurar a aplicação do evento com o logotipo e o esquema de cores da própria marca.' },
-                        { id: 'RF11', name: 'Aceder a Relatórios', desc: 'Visualizar relatórios básicos de vendas e produtos mais populares por evento para tomada de decisão.' }
+                        { id: 'RF01', name: 'Gestão Completa de Eventos', desc: 'Criar, configurar, ativar e desativar múltiplos eventos na plataforma, definindo nomes, datas, horários de operação e cardápios específicos para cada um.' },
+                        { id: 'RF02', name: 'Gestão de Cardápio Dinâmico', desc: 'Adicionar, editar e remover categorias e itens do cardápio de forma centralizada, com alterações a serem refletidas instantaneamente em todos os pontos de acesso.' },
+                        { id: 'RF03', name: 'Controlo de Disponibilidade de Itens', desc: 'Marcar itens individuais como "esgotados" ou "disponíveis" em tempo real com um único clique, para evitar pedidos de produtos indisponíveis e gerir o stock de forma eficiente.' },
+                        { id: 'RF05', name: 'Personalização de Marca (White-Label)', desc: 'Configurar a aplicação PWA de cada evento com o logotipo, o esquema de cores e a identidade visual da própria marca, proporcionando uma experiência imersiva e profissional.' },
+                        { id: 'RF11', name: 'Dashboard de Vendas em Tempo Real', desc: 'Aceder a um painel com relatórios básicos de vendas, número de pedidos e produtos mais populares por evento para tomada de decisão ágil durante a operação.' }
                     ],
                     staff: [
-                        { id: 'RF04', name: 'Painel de Pedidos (KDS)', desc: 'Visualizar todos os pedidos recebidos numa interface estilo kanban (Recebido, Em Preparo, Pronto) para uma gestão visual e eficiente.' },
-                        { id: 'RF-S01', name: 'Atualizar Status do Pedido', desc: 'Mover os cartões de pedido entre as colunas de status com um simples arrastar e soltar ou um clique.' },
-                        { id: 'RF-S02', name: 'Visualizar Detalhes do Pedido', desc: 'Clicar num pedido para ver todos os itens, quantidades e observações feitas pelo cliente.' }
+                        { id: 'RF04', name: 'Painel de Pedidos Otimizado (KDS)', desc: 'Visualizar todos os pedidos recebidos numa interface estilo kanban (Recebido, Em Preparo, Pronto) para uma gestão visual, intuitiva e à prova de erros, mesmo em ambientes de alta pressão.' },
+                        { id: 'RF-S01', name: 'Atualização de Status com Um Clique', desc: 'Mover os cartões de pedido entre as colunas de status com um simples clique ou arrastar e soltar, atualizando automaticamente a visão do cliente.' },
+                        { id: 'RF-S02', name: 'Visualização Clara dos Detalhes do Pedido', desc: 'Clicar num pedido para expandir e ver todos os itens, quantidades, modificações e observações feitas pelo cliente, garantindo a precisão no preparo.' }
                     ]
                 },
                 classes: [
-                    { name: 'Cliente', attributes: ['cliente_id (PK)', 'nome_fantasia', 'cnpj'], desc: 'Representa o estabelecimento (B2B) que contrata o serviço.' },
-                    { name: 'Evento', attributes: ['evento_id (PK)', 'cliente_id (FK)', 'nome_evento', 'data_inicio'], desc: 'Representa uma instância de um evento criado por um Cliente.' },
-                    { name: 'Usuario', attributes: ['usuario_id (PK)', 'cpf', 'nome'], desc: 'Representa o consumidor final que frequenta o evento e faz pedidos.' },
-                    { name: 'Pulseira', attributes: ['pulseira_id (PK)', 'evento_id (FK)', 'usuario_id (FK)', 'codigo_pulseira'], desc: 'Representa a sessão única de um Usuário dentro de um Evento.' },
-                    { name: 'ItemCardapio', attributes: ['item_id (PK)', 'nome_item', 'preco', 'disponivel'], desc: 'Representa um produto que pode ser vendido.' },
-                    { name: 'Pedido', attributes: ['pedido_id (PK)', 'pulseira_id (FK)', 'status_pedido', 'valor_total'], desc: 'O registo de uma transação de compra feita por um Usuário.' },
-                    { name: 'ItemPedido', attributes: ['item_pedido_id (PK)', 'pedido_id (FK)', 'item_id (FK)', 'quantidade'], desc: 'Tabela de junção que detalha os produtos e quantidades de um Pedido.' },
-                    { name: 'Pagamento', attributes: ['pagamento_id (PK)', 'pedido_id (FK)', 'metodo', 'status'], desc: 'O registo da transação financeira associada a um Pedido.' }
+                    { name: 'Cliente', attributes: ['cliente_id (PK)', 'nome_fantasia', 'cnpj', 'config_design (JSON)'], desc: 'Representa a entidade de negócio (B2B) que contrata a plataforma Fila Zero para os seus eventos. Armazena dados cadastrais e as configurações de personalização (white-label).' },
+                    { name: 'Evento', attributes: ['evento_id (PK)', 'cliente_id (FK)', 'nome_evento', 'data_inicio', 'ativo'], desc: 'Representa uma instância específica de um evento criado por um Cliente. Cada evento tem o seu próprio ciclo de vida (ativo/inativo) e está associado a um cardápio.' },
+                    { name: 'Usuario', attributes: ['usuario_id (PK)', 'cpf (UNIQUE)', 'nome_completo'], desc: 'Representa o consumidor final, o participante do evento que realiza os pedidos. O CPF é usado como identificador único para rastrear o histórico de consumo e para fins de pagamento.' },
+                    { name: 'Pulseira', attributes: ['pulseira_id (PK)', 'evento_id (FK)', 'usuario_id (FK)', 'codigo_pulseira (UNIQUE)'], desc: 'Entidade de ligação que representa a sessão única e autenticada de um Usuário dentro de um Evento específico. É o "login" do consumidor no contexto daquele evento.' },
+                    { name: 'ItemCardapio', attributes: ['item_id (PK)', 'categoria_id (FK)', 'nome_item', 'preco', 'disponivel'], desc: 'Representa um produto individual (bebida, comida, etc.) que pode ser vendido. A sua disponibilidade pode ser controlada em tempo real pelo gestor.' },
+                    { name: 'Pedido', attributes: ['pedido_id (PK)', 'pulseira_id (FK)', 'status_pedido', 'valor_total', 'numero_pedido_evento'], desc: 'O registo mestre de uma transação de compra. Contém o status geral do pedido (Recebido, Em Preparo, etc.) e o valor total, servindo como o objeto central da operação.' },
+                    { name: 'ItemPedido', attributes: ['item_pedido_id (PK)', 'pedido_id (FK)', 'item_id (FK)', 'quantidade', 'preco_unitario'], desc: 'Tabela de junção que detalha os produtos e as quantidades de um Pedido específico. Regista o preço no momento da compra para garantir a integridade histórica.' },
+                    { name: 'Pagamento', attributes: ['pagamento_id (PK)', 'pedido_id (FK)', 'metodo', 'status', 'id_transacao_gateway'], desc: 'O registo da transação financeira associada a um Pedido. Armazena o método, o status (aprovado/recusado) e o identificador do gateway de pagamento para conciliação.' }
                 ],
+                useCases: {
+                    actors: [
+                        { id: 'consumer', name: 'Consumidor Final', icon: '👤' },
+                        { id: 'manager', name: 'Gestor do Evento', icon: '💼' },
+                        { id: 'staff', name: 'Equipa de Bar', icon: '🧑‍🍳' }
+                    ],
+                    cases: [
+                        { id: 'uc-order', name: 'Realizar Pedido', actor: 'consumer', spec: 'Permitir que o consumidor selecione produtos, confirme seu pedido e prossiga para o pagamento.' },
+                        { id: 'uc-pay', name: 'Efetuar Pagamento', actor: 'consumer', spec: 'Processar o pagamento de um pedido através de um gateway seguro, com suporte a Pix e Cartão.' },
+                        { id: 'uc-status', name: 'Consultar Status', actor: 'consumer', spec: 'Exibir o status do pedido em tempo real para o consumidor saber quando retirá-lo.' },
+                        { id: 'uc-manage-event', name: 'Gerenciar Evento', actor: 'manager', spec: 'Permitir ao gestor criar, configurar e ativar eventos, incluindo a personalização da marca.' },
+                        { id: 'uc-manage-menu', name: 'Gerenciar Cardápio', actor: 'manager', spec: 'Fornecer ferramentas para o gestor adicionar, editar e controlar a disponibilidade dos itens.' },
+                        { id: 'uc-view-orders', name: 'Visualizar Pedidos (KDS)', actor: 'staff', spec: 'Apresentar os pedidos recebidos em uma interface otimizada (KDS) para a equipa de bar.' }
+                    ]
+                },
                 costs: [
                     { item: 'Computadores para operação', total: 12600.00, category: 'Hardware' },
                     { item: 'Nobreaks com autonomia', total: 1050.00, category: 'Hardware' },
@@ -315,65 +437,216 @@
                     { item: 'Equipamentos de rede', total: 680.00, category: 'Hardware' },
                     { item: 'Treinamento inicial da equipa', total: 1500.00, category: 'Serviços' }
                 ],
-                prototypes: [
-                    { title: 'Ecrã de Produtos', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Card%C3%A1pio+Digital' },
-                    { title: 'Carrinho de Compras', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Carrinho' },
-                    { title: 'Pagamento', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Pagamento' },
-                    { title: 'Status do Pedido', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=Pedido+%23157' },
-                    { title: 'Painel do Gestor (KDS)', url: 'https://placehold.co/800x500/f1f5f9/3b82f6?text=Painel+de+Pedidos+(KDS)' },
-                    { title: 'Painel do Entregador', url: 'https://placehold.co/300x600/f1f5f9/3b82f6?text=%C3%81rea+do+Entregador' },
+                roadmap: [
+                    {
+                        phase: 'Fase 1: Lançamento e Validação do MVP (0-3 Meses)',
+                        desc: 'Lançamento da plataforma focada exclusivamente no nicho de eventos e baladas para validar o core da solução: pedidos e pagamentos via PWA.',
+                        icon: '🚀',
+                        key_milestones: [
+                            'Desenvolvimento do core da PWA e painel de gestão.',
+                            'Integração com gateway de pagamento primário (Pix e Cartão).',
+                            'Onboarding e suporte intensivo aos 5 primeiros clientes-piloto.',
+                            'Recolha de feedback quantitativo e qualitativo para refinar a UX.'
+                        ]
+                    },
+                    {
+                        phase: 'Fase 2: Expansão de Mercado e Inteligência de Dados (4-9 Meses)',
+                        desc: 'Introdução do módulo adaptado para restaurantes, incluindo funcionalidades de gestão de mesas. Lançamento do Dashboard de Analytics v1.0.',
+                        icon: '📈',
+                        key_milestones: [
+                            'Desenvolvimento do módulo de gestão de mesas e contas.',
+                            'Criação do Dashboard de Analytics com métricas chave (ticket médio, itens mais vendidos).',
+                            'Expansão da equipa de vendas para abordagem ao setor de restaurantes.',
+                            'Primeiros estudos de caso de sucesso publicados.'
+                        ]
+                    },
+                    {
+                        phase: 'Fase 3: Consolidação como Ecossistema (10-18 Meses)',
+                        desc: 'Desenvolvimento de uma API pública para permitir a integração com os principais sistemas de PDV do mercado. Introdução de módulos avançados de marketing e fidelização.',
+                        icon: '🌐',
+                        key_milestones: [
+                            'Desenvolvimento e documentação da API pública do Fila Zero.',
+                            'Criação do módulo de vouchers e programas de pontos.',
+                            'Estabelecimento de parcerias estratégicas com fornecedores de sistemas PDV.',
+                            'Lançamento de um plano "Enterprise" com funcionalidades avançadas e suporte premium.'
+                        ]
+                    }
                 ]
             };
 
-            const productContent = document.getElementById('product-content-detailed');
-            const productTabs = document.querySelectorAll('.product-tab-detailed');
+            const setupProductTabs = () => {
+                const tabs = document.querySelectorAll('.product-tab-detailed');
+                const contentContainer = document.getElementById('product-content-detailed');
 
-            function renderRequirements(type) {
-                const reqs = data.requirements[type];
-                const content = `
-                    <div class="fade-in grid md:grid-cols-2 gap-6">
-                        ${reqs.map(r => `
-                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                                <h4 class="font-bold text-blue-600">${r.id} - ${r.name}</h4>
-                                <p class="text-sm text-slate-600 mt-1">${r.desc}</p>
-                            </div>
-                        `).join('')}
-                    </div>`;
-                productContent.innerHTML = content;
-            }
+                const renderContent = (type) => {
+                    const reqs = FilaZeroData.requirements[type];
+                    contentContainer.innerHTML = `
+                        <div class="fade-in grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${reqs.map(r => `
+                                <div class="bg-slate-50 p-6 rounded-lg border border-slate-200 h-full flex flex-col hover:shadow-lg hover:border-blue-300 transition-all duration-300">
+                                    <h4 class="font-bold text-lg text-blue-600">${r.id}</h4>
+                                    <h5 class="font-semibold text-slate-800 mt-1">${r.name}</h5>
+                                    <p class="text-sm text-slate-600 mt-2 flex-grow">${r.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>`;
+                };
 
-            productTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const target = tab.getAttribute('data-tab');
-                    productTabs.forEach(t => {
-                        t.classList.remove('text-blue-600', 'border-blue-600');
-                        t.classList.add('text-slate-500');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const target = tab.getAttribute('data-tab');
+                        tabs.forEach(t => {
+                            t.classList.remove('text-blue-600', 'border-blue-600');
+                            t.classList.add('text-slate-500');
+                        });
+                        tab.classList.add('text-blue-600', 'border-blue-600');
+                        renderContent(target);
                     });
-                    tab.classList.add('text-blue-600', 'border-blue-600');
-                    renderRequirements(target);
                 });
-            });
+                renderContent('consumer');
+            };
 
-            renderRequirements('consumer');
+            setupProductTabs();
 
-            const classDiagram = document.getElementById('class-diagram');
-            const classDetails = document.getElementById('class-details');
-            data.classes.forEach(c => {
-                const node = document.createElement('div');
-                node.className = 'diagram-node p-4 bg-white rounded-lg shadow-md';
-                node.innerHTML = `<h4 class="font-bold text-center border-b pb-2">${c.name}</h4><ul class="text-sm mt-2 text-slate-600">${c.attributes.map(a => `<li>${a}</li>`).join('')}</ul>`;
-                node.addEventListener('click', () => {
-                    document.querySelectorAll('.diagram-node').forEach(n => n.classList.remove('selected'));
-                    node.classList.add('selected');
-                    classDetails.innerHTML = `<h4 class="font-bold text-blue-600">${c.name}</h4><p class="mt-2 text-slate-700">${c.desc}</p>`;
-                    classDetails.classList.remove('hidden');
+            const setupTechTabs = () => {
+                const tabs = document.querySelectorAll('.tech-tab');
+                const contentContainer = document.getElementById('tech-diagram-content');
+
+                const renderers = {
+                    uc: () => {
+                        const { actors, cases } = FilaZeroData.useCases;
+                        const actorHtml = actors.map(actor => `
+                            <div id="actor-${actor.id}" class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col items-center justify-center h-40">
+                                <span class="text-4xl">${actor.icon}</span>
+                                <p class="font-semibold mt-2 text-center">${actor.name}</p>
+                            </div>`).join('');
+                        const casesHtml = cases.map(c => `
+                            <div id="${c.id}" data-spec="${c.spec}" data-actor="${c.actor}" class="diagram-node p-4 bg-blue-50 rounded-full shadow text-center text-blue-800 font-semibold flex items-center justify-center h-24">
+                                ${c.name}
+                            </div>`).join('');
+
+                        contentContainer.innerHTML = `
+                            <div class="fade-in">
+                                <h3 class="text-3xl font-bold mb-8 text-center">Diagrama de Casos de Uso</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                                    <div class="flex flex-col gap-4 items-center">${actorHtml}</div>
+                                    <div class="md:col-span-2 grid grid-cols-2 gap-4">${casesHtml}</div>
+                                </div>
+                                <div id="uc-details" class="mt-8 p-6 bg-slate-100 rounded-lg min-h-[90px] fade-in hidden glassmorphism shadow-inner"></div>
+                            </div>`;
+
+                        const detailsPane = document.getElementById('uc-details');
+                        document.querySelectorAll('#tech-diagram-content .diagram-node').forEach(node => {
+                            node.addEventListener('click', () => {
+                                document.querySelectorAll('#tech-diagram-content .diagram-node').forEach(n => n.classList.remove('selected'));
+                                node.classList.add('selected');
+                                detailsPane.classList.remove('hidden');
+                                if (node.dataset.spec) {
+                                    detailsPane.innerHTML = `<h4 class="font-bold text-blue-600">Especificação</h4><p class="text-slate-700 mt-1">${node.dataset.spec}</p>`;
+                                } else {
+                                    detailsPane.innerHTML = `<p class="text-slate-700 font-semibold">Ator: ${node.textContent.trim()}</p>`;
+                                }
+                            });
+                        });
+                    },
+                    class: (isER = false) => {
+                        const { classes } = FilaZeroData;
+                        const classHtml = classes.map(c => `
+                             <div id="class-${c.name}" class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col">
+                                <h4 class="font-bold text-center border-b pb-2 mb-2 text-blue-700">${c.name}</h4>
+                                <ul class="text-xs mt-2 text-slate-600 space-y-1 flex-grow">${c.attributes.map(a => `<li>${a.replace('(PK)', '<span class="font-bold text-amber-600">PK</span>').replace('(FK)', '<span class="font-bold text-teal-600">FK</span>').replace('(UNIQUE)', '<span class="font-bold text-violet-600">UN</span>')}</li>`).join('')}</ul>
+                            </div>`).join('');
+
+                        contentContainer.innerHTML = `
+                             <div class="fade-in">
+                                <h3 class="text-3xl font-bold mb-8 text-center">${isER ? 'Diagrama Entidade-Relacionamento' : 'Diagrama de Classe'}</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">${classHtml}</div>
+                                <div id="class-details" class="mt-8 p-6 bg-slate-100 rounded-lg min-h-[120px] fade-in hidden glassmorphism shadow-inner"></div>
+                            </div>`;
+
+                        const detailsPane = document.getElementById('class-details');
+                        document.querySelectorAll('#tech-diagram-content .diagram-node').forEach((node, index) => {
+                            node.addEventListener('click', () => {
+                                document.querySelectorAll('#tech-diagram-content .diagram-node').forEach(n => n.classList.remove('selected'));
+                                node.classList.add('selected');
+                                const classData = FilaZeroData.classes[index];
+                                detailsPane.innerHTML = `<h4 class="font-bold text-blue-600 text-lg">${classData.name}</h4><p class="mt-2 text-slate-700">${classData.desc}</p>`;
+                                detailsPane.classList.remove('hidden');
+                            });
+                        });
+                    },
+                    sequence: () => {
+                        contentContainer.innerHTML = `
+                            <div class="fade-in">
+                                <h3 class="text-3xl font-bold mb-8 text-center">Diagrama de Sequência: Pagamento Bem-sucedido</h3>
+                                <div class="w-full overflow-x-auto p-4 relative">
+                                    <div class="flex justify-between items-start space-x-4 min-w-[800px]">
+                                        <!-- Lifelines -->
+                                        <div class="text-center w-1/4"><b>👤 Consumidor</b><div class="h-96 border-l-2 border-dashed border-slate-400 mx-auto mt-2"></div></div>
+                                        <div class="text-center w-1/4"><b>💻 Servidor Fila Zero</b><div class="h-96 border-l-2 border-dashed border-slate-400 mx-auto mt-2"></div></div>
+                                        <div class="text-center w-1/4"><b>🏦 Gateway Pagamento</b><div class="h-96 border-l-2 border-dashed border-slate-400 mx-auto mt-2"></div></div>
+                                        <div class="text-center w-1/4"><b>📦 Pedido</b><div class="h-96 border-l-2 border-dashed border-slate-400 mx-auto mt-2"></div></div>
+                                    </div>
+                                    <!-- Messages -->
+                                    <div class="absolute top-16 left-0 w-full min-w-[800px]">
+                                        <div class="relative h-96">
+                                            <p style="top: 20px; left: 12.5%; width: 25%;" class="absolute text-sm text-center font-semibold">1. Efetuar Pagamento() →</p>
+                                            <p style="top: 80px; left: 37.5%; width: 25%;" class="absolute text-sm text-center font-semibold">2. ProcessarTransacao() →</p>
+                                            <p style="top: 140px; left: 37.5%; width: 25%;" class="absolute text-sm text-center font-semibold text-green-600">← 3. [Status: Aprovado]</p>
+                                            <p style="top: 200px; left: 37.5%; width: 37.5%;" class="absolute text-sm text-center font-semibold">4. AtualizarStatus("Pago") →</p>
+                                            <p style="top: 260px; left: 12.5%; width: 25%;" class="absolute text-sm text-center font-semibold text-green-600">← 5. NotificarSucesso()</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>`;
+                    },
+                    er: () => {
+                        renderers.class(true);
+                        const details = document.createElement('div');
+                        details.className = 'mt-4 text-center text-sm text-slate-500';
+                        details.innerHTML = 'Nesta abstração, o Diagrama ER é representado pelo Diagrama de Classe, que modela as entidades de dados e seus relacionamentos lógicos.';
+                        contentContainer.appendChild(details);
+                    }
+                };
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const target = tab.getAttribute('data-diagram');
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        renderers[target]();
+                    });
                 });
-                classDiagram.appendChild(node);
+                renderers.uc();
+            };
+
+            setupTechTabs();
+
+            new Chart(document.getElementById('viabilityChart').getContext('2d'), {
+                type: 'radar',
+                data: {
+                    labels: ['Técnica', 'Operacional', 'Mercado', 'Económica', 'Estratégica'],
+                    datasets: [{
+                        label: 'Pontuação de Viabilidade',
+                        data: [95, 85, 98, 92, 97],
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(37, 99, 235, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 100, pointLabels: { font: { size: 14 } }, ticks: { backdropColor: 'rgba(255,255,255,0.7)' } } },
+                    plugins: { legend: { display: false } }
+                }
             });
 
             const costsTbody = document.querySelector('#costs-table tbody');
             function renderCosts(sortKey = 'item', asc = true) {
-                const sortedCosts = [...data.costs].sort((a, b) => {
+                const sortedCosts = [...FilaZeroData.costs].sort((a, b) => {
                     if (a[sortKey] < b[sortKey]) return asc ? -1 : 1;
                     if (a[sortKey] > b[sortKey]) return asc ? 1 : -1;
                     return 0;
@@ -398,11 +671,10 @@
                 });
             });
 
-            const costsByCategory = data.costs.reduce((acc, cost) => {
+            const costsByCategory = FilaZeroData.costs.reduce((acc, cost) => {
                 acc[cost.category] = (acc[cost.category] || 0) + cost.total;
                 return acc;
             }, {});
-
             new Chart(document.getElementById('costsChart').getContext('2d'), {
                 type: 'doughnut',
                 data: {
@@ -410,36 +682,94 @@
                     datasets: [{
                         data: Object.values(costsByCategory),
                         backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'],
-                        borderWidth: 0,
+                        borderColor: '#f8fafc',
+                        borderWidth: 4,
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { padding: 20, font: { size: 14 } } } }
                 }
             });
 
-            const carousel = document.getElementById('prototype-carousel');
-            carousel.innerHTML = data.prototypes.map(p => `
-                <div class="snap-center flex-shrink-0 w-full md:w-1/3 p-2">
-                    <div class="bg-white rounded-lg shadow-md p-4">
-                        <img src="${p.url}" alt="${p.title}" class="w-full rounded-md object-cover">
-                        <p class="text-center font-semibold mt-4">${p.title}</p>
-                    </div>
-                </div>
-            `).join('');
+            let roiChart;
+            const roiCanvas = document.getElementById('roiChart');
+            const eventsSlider = document.getElementById('events');
+            const revenueSlider = document.getElementById('revenue');
+            const increaseSlider = document.getElementById('increase');
+            const eventsVal = document.getElementById('events-val');
+            const revenueVal = document.getElementById('revenue-val');
+            const increaseVal = document.getElementById('increase-val');
+            const monthlyFee = 350;
 
-            document.getElementById('nextBtn').addEventListener('click', () => {
-                carousel.scrollBy({ left: carousel.clientWidth / 3, behavior: 'smooth' });
+            function updateROIChart() {
+                const numEvents = parseInt(eventsSlider.value);
+                const avgRevenue = parseInt(revenueSlider.value);
+                const percentIncrease = parseInt(increaseSlider.value) / 100;
+
+                const currentMonthlyRevenue = numEvents * avgRevenue;
+                const additionalRevenue = currentMonthlyRevenue * percentIncrease;
+                const newMonthlyRevenue = currentMonthlyRevenue + additionalRevenue;
+                const monthlyCost = numEvents * monthlyFee;
+                const netProfit = additionalRevenue - monthlyCost;
+
+                eventsVal.textContent = numEvents;
+                revenueVal.textContent = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(avgRevenue);
+                increaseVal.textContent = `${parseInt(increaseSlider.value)}%`;
+
+                const chartData = {
+                    labels: ['Receita Adicional', 'Custo da Plataforma', 'Lucro Líquido'],
+                    datasets: [{
+                        data: [additionalRevenue, monthlyCost, netProfit > 0 ? netProfit : 0],
+                        backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
+                        borderColor: '#f8fafc',
+                        borderWidth: 4,
+                    }]
+                };
+
+                if (roiChart) {
+                    roiChart.data = chartData;
+                    roiChart.update();
+                } else {
+                    roiChart = new Chart(roiCanvas.getContext('2d'), {
+                        type: 'bar',
+                        data: chartData,
+                        options: {
+                            indexAxis: 'y',
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { callbacks: { label: (context) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.raw) } } },
+                            scales: { x: { ticks: { callback: value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact' }).format(value) } } }
+                        }
+                    });
+                }
+            }
+
+            [eventsSlider, revenueSlider, increaseSlider].forEach(slider => {
+                slider.addEventListener('input', updateROIChart);
             });
-            document.getElementById('prevBtn').addEventListener('click', () => {
-                carousel.scrollBy({ left: -carousel.clientWidth / 3, behavior: 'smooth' });
+            updateROIChart();
+
+
+            const roadmapContainer = document.getElementById('roadmap-container');
+            FilaZeroData.roadmap.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'relative pl-20 timeline-item';
+                div.innerHTML = `
+                    <div class="absolute -left-5 top-0 text-4xl">${item.icon}</div>
+                    <h4 class="text-2xl font-bold text-blue-600">${item.phase}</h4>
+                    <p class="text-slate-600 mt-2 text-lg">${item.desc}</p>
+                    <div class="mt-4 border-t pt-4">
+                        <h5 class="font-semibold text-slate-800 mb-2">Marcos Chave:</h5>
+                        <ul class="list-disc list-inside text-slate-700 space-y-1">
+                            ${item.key_milestones.map(milestone => `<li>${milestone}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+                roadmapContainer.appendChild(div);
             });
 
             const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('section');
-
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -451,7 +781,7 @@
                         });
                     }
                 });
-            }, { threshold: 0.5 });
+            }, { rootMargin: '-40% 0px -60% 0px' });
 
             sections.forEach(section => observer.observe(section));
         });
