@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Corporate Blue & Slate (A sophisticated palette using deep slate for text, a clean white/light gray background, and a confident, trustworthy blue for all interactive elements, data highlights, and calls to action.) -->
     <!-- Application Structure Plan: The application uses a comprehensive narrative structure, guiding the user from the high-level business case to the deep technical details and future vision. The flow is: 1. Visão (Problem/Solution), 2. O Produto (Detailed user-centric features), 3. A Engenharia por Trás (A fully interactive hub for ALL technical diagrams: Use Case, Class, Sequence, and ER), 4. Análise Estratégica (Deep dive into SWOT, Business Model, Financials & ROI), 5. Roadmap. This structure is designed to impress a corporate audience by showing strategic depth before technical implementation. -->
-    <!-- Visualization & Content Choices: Report Info: Viability Analysis -> Goal: Analyze/Strategize -> Viz: Interactive SWOT Analysis Grid, detailed Business Model cards, and an interactive ROI Calculator with a dynamic Bar Chart -> Interaction: Hover on SWOT items for details, use sliders/inputs on the calculator to see real-time ROI projections -> Justification: This transforms a simple viability section into a powerful, data-driven business case that allows for scenario planning, directly addressing the need for a "grande porte" presentation. Library: Chart.js/Canvas for the ROI chart. | Report Info: ALL ERS Diagrams -> Goal: Organize/Explain/Explore -> Viz: Fully interactive HTML/CSS diagrams built from scratch -> Interaction: Clicks/hovers on nodes and actors reveal detailed specs -> Justification: Transforms the static ERS into a live, explorable model. -->
+    <!-- Visualization & Content Choices: Report Info: Viability Analysis -> Goal: Analyze/Strategize -> Viz: Interactive SWOT Analysis Grid, detailed Business Model cards, and an interactive ROI Calculator with a dynamic Bar Chart -> Interaction: Hover on SWOT items for details, use sliders/inputs on the calculator to see real-time ROI projections -> Justification: This transforms a simple viability section into a powerful, data-driven business case that allows for scenario planning, directly addressing the need for a "grande porte" presentation. Library: Chart.js/Canvas for the ROI chart. | Report Info: ALL ERS Diagrams -> Goal: Organize/Explain/Explore -> Viz: Fully interactive HTML/CSS diagrams built from scratch -> Interaction: Clicks/hovers on nodes and actors reveal detailed specs AND interactive Activity Flow diagrams for Use Cases -> Justification: Transforms the static ERS into a live, explorable model. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
@@ -418,12 +418,12 @@
                         { id: 'staff', name: 'Equipa de Bar', icon: '🧑‍🍳' }
                     ],
                     cases: [
-                        { id: 'uc-order', name: 'Realizar Pedido', actor: 'consumer', spec: 'Permitir que o consumidor selecione produtos, confirme seu pedido e prossiga para o pagamento.' },
-                        { id: 'uc-pay', name: 'Efetuar Pagamento', actor: 'consumer', spec: 'Processar o pagamento de um pedido através de um gateway seguro, com suporte a Pix e Cartão.' },
-                        { id: 'uc-status', name: 'Consultar Status', actor: 'consumer', spec: 'Exibir o status do pedido em tempo real para o consumidor saber quando retirá-lo.' },
-                        { id: 'uc-manage-event', name: 'Gerenciar Evento', actor: 'manager', spec: 'Permitir ao gestor criar, configurar e ativar eventos, incluindo a personalização da marca.' },
-                        { id: 'uc-manage-menu', name: 'Gerenciar Cardápio', actor: 'manager', spec: 'Fornecer ferramentas para o gestor adicionar, editar e controlar a disponibilidade dos itens.' },
-                        { id: 'uc-view-orders', name: 'Visualizar Pedidos (KDS)', actor: 'staff', spec: 'Apresentar os pedidos recebidos em uma interface otimizada (KDS) para a equipa de bar.' }
+                        { id: 'uc-order', name: 'Realizar Pedido', actor: 'consumer', spec: 'Permitir que o consumidor selecione produtos, confirme o seu pedido e prossiga para o pagamento.', flow: ['Início', 'Cliente acede ao PWA via QR Code', 'Navega no cardápio e adiciona itens', 'Finaliza Pedido', 'Sistema solicita confirmação', 'Cliente confirma', 'Sistema redireciona para Pagamento', 'Fim'] },
+                        { id: 'uc-pay', name: 'Efetuar Pagamento', actor: 'consumer', spec: 'Processar o pagamento de um pedido através de um gateway seguro, com suporte a Pix e Cartão.', flow: ['Início', 'Cliente escolhe método de pagamento', 'Insere dados (se cartão) ou copia código Pix', 'Sistema contacta Gateway de Pagamento', 'Gateway retorna [Aprovado]', 'Sistema atualiza status do Pedido', 'Fim'] },
+                        { id: 'uc-status', name: 'Consultar Status', actor: 'consumer', spec: 'Exibir o status do pedido em tempo real para o consumidor saber quando retirá-lo.', flow: ['Início', 'Cliente abre o PWA', 'Sistema exibe ecrã com número do pedido e status atual', 'Status é atualizado em tempo real', 'Fim'] },
+                        { id: 'uc-manage-event', name: 'Gerenciar Evento', actor: 'manager', spec: 'Permitir ao gestor criar, configurar e ativar eventos, incluindo a personalização da marca.', flow: ['Início', 'Gestor acede ao Painel Admin', 'Navega para a secção de Eventos', 'Cria/Edita um evento (datas, nome, etc)', 'Salva as alterações', 'Fim'] },
+                        { id: 'uc-manage-menu', name: 'Gerenciar Cardápio', actor: 'manager', spec: 'Fornecer ferramentas para o gestor adicionar, editar e controlar a disponibilidade dos itens.', flow: ['Início', 'Gestor acede ao Painel Admin', 'Navega para a secção de Cardápio', 'Adiciona/Edita um item (preço, foto)', 'Ativa/Desativa a disponibilidade', 'Fim'] },
+                        { id: 'uc-view-orders', name: 'Visualizar Pedidos (KDS)', actor: 'staff', spec: 'Apresentar os pedidos recebidos numa interface otimizada (KDS) para a equipa de bar.', flow: ['Início', 'Novo pedido é recebido', 'Sistema exibe o pedido no ecrã do KDS na coluna "Recebido"', 'Equipa move o pedido para "Em Preparo"', 'Equipa move o pedido para "Pronto"', 'Fim'] }
                     ]
                 },
                 costs: [
@@ -516,12 +516,12 @@
                     uc: () => {
                         const { actors, cases } = FilaZeroData.useCases;
                         const actorHtml = actors.map(actor => `
-                            <div id="actor-${actor.id}" class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col items-center justify-center h-40">
+                            <div class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col items-center justify-center h-40">
                                 <span class="text-4xl">${actor.icon}</span>
                                 <p class="font-semibold mt-2 text-center">${actor.name}</p>
                             </div>`).join('');
                         const casesHtml = cases.map(c => `
-                            <div id="${c.id}" data-spec="${c.spec}" data-actor="${c.actor}" class="diagram-node p-4 bg-blue-50 rounded-full shadow text-center text-blue-800 font-semibold flex items-center justify-center h-24">
+                            <div id="${c.id}" class="diagram-node p-4 bg-blue-50 rounded-full shadow text-center text-blue-800 font-semibold flex items-center justify-center h-24">
                                 ${c.name}
                             </div>`).join('');
 
@@ -532,7 +532,7 @@
                                     <div class="flex flex-col gap-4 items-center">${actorHtml}</div>
                                     <div class="md:col-span-2 grid grid-cols-2 gap-4">${casesHtml}</div>
                                 </div>
-                                <div id="uc-details" class="mt-8 p-6 bg-slate-100 rounded-lg min-h-[90px] fade-in hidden glassmorphism shadow-inner"></div>
+                                <div id="uc-details" class="mt-8 p-6 bg-slate-100 rounded-lg min-h-[120px] fade-in hidden glassmorphism shadow-inner"></div>
                             </div>`;
 
                         const detailsPane = document.getElementById('uc-details');
@@ -541,10 +541,27 @@
                                 document.querySelectorAll('#tech-diagram-content .diagram-node').forEach(n => n.classList.remove('selected'));
                                 node.classList.add('selected');
                                 detailsPane.classList.remove('hidden');
-                                if (node.dataset.spec) {
-                                    detailsPane.innerHTML = `<h4 class="font-bold text-blue-600">Especificação</h4><p class="text-slate-700 mt-1">${node.dataset.spec}</p>`;
-                                } else {
+
+                                const useCaseData = FilaZeroData.useCases.cases.find(c => c.id === node.id);
+                                if (useCaseData && useCaseData.flow) {
+                                    let flowHtml = `<h4 class="font-bold text-blue-600 mb-4">Fluxo de Atividades: ${useCaseData.name}</h4><div class="flex flex-col">`;
+                                    useCaseData.flow.forEach((step, index) => {
+                                        flowHtml += `
+                                            <div class="flex items-center">
+                                                <span class="flex-shrink-0 bg-blue-600 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold text-sm">${index === 0 || index === useCaseData.flow.length - 1 ? '' : index}</span>
+                                                <p class="ml-4 text-slate-700">${step}</p>
+                                            </div>
+                                        `;
+                                        if (index < useCaseData.flow.length - 1) {
+                                            flowHtml += `<div class="ml-3.5 h-6 border-l-2 border-slate-300 border-dashed"></div>`;
+                                        }
+                                    });
+                                    flowHtml += `</div>`;
+                                    detailsPane.innerHTML = flowHtml;
+                                } else if (FilaZeroData.useCases.actors.find(a => `actor-${a.id}` === node.id)) {
                                     detailsPane.innerHTML = `<p class="text-slate-700 font-semibold">Ator: ${node.textContent.trim()}</p>`;
+                                } else {
+                                    detailsPane.innerHTML = `<p class="text-slate-600">Selecione um Caso de Uso para ver o seu fluxo de atividades.</p>`;
                                 }
                             });
                         });
@@ -552,7 +569,7 @@
                     class: (isER = false) => {
                         const { classes } = FilaZeroData;
                         const classHtml = classes.map(c => `
-                             <div id="class-${c.name}" class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col">
+                             <div class="diagram-node p-4 bg-white rounded-lg shadow-md flex flex-col">
                                 <h4 class="font-bold text-center border-b pb-2 mb-2 text-blue-700">${c.name}</h4>
                                 <ul class="text-xs mt-2 text-slate-600 space-y-1 flex-grow">${c.attributes.map(a => `<li>${a.replace('(PK)', '<span class="font-bold text-amber-600">PK</span>').replace('(FK)', '<span class="font-bold text-teal-600">FK</span>').replace('(UNIQUE)', '<span class="font-bold text-violet-600">UN</span>')}</li>`).join('')}</ul>
                             </div>`).join('');
